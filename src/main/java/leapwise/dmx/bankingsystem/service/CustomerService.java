@@ -2,6 +2,7 @@ package leapwise.dmx.bankingsystem.service;
 
 import leapwise.dmx.bankingsystem.dto.AccountDTO;
 import leapwise.dmx.bankingsystem.dto.CustomerDTO;
+import leapwise.dmx.bankingsystem.exception.CustomerNotFoundException;
 import leapwise.dmx.bankingsystem.mapper.AccountMapper;
 import leapwise.dmx.bankingsystem.mapper.CustomerMapper;
 import leapwise.dmx.bankingsystem.model.Customer;
@@ -32,9 +33,6 @@ public class CustomerService {
 					.collect(Collectors.toList());
 			customerDTO.setAccounts(accountDTOs);
 			return customerDTO;
-		}).orElseThrow(() -> {
-			log.error("Customer with id {} not found, throwing exception.", customerId);
-			return new RuntimeException("Customer not found");
-		});
+		}).orElseThrow(() -> new CustomerNotFoundException("Customer with ID " + customerId + " not found"));
 	}
 }

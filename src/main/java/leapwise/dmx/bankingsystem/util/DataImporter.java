@@ -1,5 +1,6 @@
 package leapwise.dmx.bankingsystem.util;
 
+import leapwise.dmx.bankingsystem.exception.AccountNotFoundException;
 import leapwise.dmx.bankingsystem.model.Transaction;
 import leapwise.dmx.bankingsystem.repository.AccountRepository;
 import leapwise.dmx.bankingsystem.repository.TransactionRepository;
@@ -71,9 +72,11 @@ public class DataImporter implements CommandLineRunner {
 
 	private Transaction parseTransactionFromCSV(String line) {
 		String[] data = line.split(",");
+		Long senderAccountId = Long.parseLong(data[0]);
+		Long receiverAccountId = Long.parseLong(data[1]);
 		Transaction transaction = new Transaction();
-		transaction.setSenderAccount(accountRepository.findById(Long.parseLong(data[0])).orElseThrow());
-		transaction.setReceiverAccount(accountRepository.findById(Long.parseLong(data[1])).orElseThrow());
+		transaction.setSenderAccount(accountRepository.findById(senderAccountId).orElseThrow(() -> new AccountNotFoundException("Account with ID " + senderAccountId + " not found in database.")));
+		transaction.setReceiverAccount(accountRepository.findById(receiverAccountId).orElseThrow(() -> new AccountNotFoundException("Account with ID " + receiverAccountId + " not found in database.")));
 		transaction.setAmount(new BigDecimal(data[2]));
 		transaction.setCurrencyId(data[3]);
 		transaction.setMessage(data[4]);
